@@ -6,6 +6,7 @@ import Error from "../Pages/Error/Error";
 import MainLayout from "../layout/MainLayout/MainLayout";
 import LogIn from "../Pages/LogIn/LogIn";
 import SingUp from "../Pages/SingUp/SingUp";
+import CheckOut from "../Pages/CheckOut/CheckOut";
 
 const myCreateRoute = createBrowserRouter([
   {
@@ -26,7 +27,9 @@ const myCreateRoute = createBrowserRouter([
         element: <SingUp></SingUp>
       },
       {
-        path: "/donations/:id",
+        path: "/checkout/:id",
+        element:<CheckOut></CheckOut>,
+        loader : ({params}) => fetch(`http://localhost:5000/services/${params.id}`)
       },
     ],
   },
