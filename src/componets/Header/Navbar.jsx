@@ -12,13 +12,22 @@ import {
 } from "@material-tailwind/react";
 import { ChevronDownIcon } from "@heroicons/react/24/solid";
 import { NavLink } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../Provider/AuthProvider";
 
 function ProfileMenu() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const {logOut} =  useContext(AuthContext)
+  const handleLogOut = () =>{
+    logOut()
+    .then(()=>{})
+    .catch(err => console.log(err))
+  }
 
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
+    
     <Menu open={isMenuOpen} handler={setIsMenuOpen} placement="bottom-end">
       <MenuHandler>
         <Button
@@ -44,9 +53,13 @@ function ProfileMenu() {
       <MenuList className="p-1">
         <ul>
           <li>fakrul</li>
+          <button
+          className="block w-full select-none rounded-lg text-white bg-[#000] py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase hover:text-white hover:bg-[#FF3811] transition-all hover:scale-90 focus:scale-100 focus:opacity-[0.85] active:scale-100 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
+          onClick={handleLogOut}>LogOut</button>
         </ul>
       </MenuList>
     </Menu>
+    
   );
 }
 
@@ -64,6 +77,11 @@ function NavList() {
 
 const MegaNavbar = () => {
   const [isNavOpen, setIsNavOpen] = React.useState(false);
+  const {user,logOut} =  useContext(AuthContext)
+
+
+
+
 
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
@@ -100,27 +118,31 @@ const MegaNavbar = () => {
           >
             Home
           </NavLink></li>
-
-       <li> <NavLink
+          {
+            user?(<>
+            <li><NavLink
+            to="/bookings"
+            className={({ isActive, isPending }) =>
+              isPending ? "pending" : isActive ? "text-red-500 " : ""
+            }
+          >
+            Booking
+          </NavLink></li>
+            </>) : (<></>)
+          }
+        </ul>
+       </div>
+       {user ? (<><ProfileMenu toggleIsNavOpen={toggleIsNavOpen} /></>) : (<>
+        <NavLink
             to="/logIn"
             className={({ isActive, isPending }) =>
               isPending ? "pending" : isActive ? "text-red-500 " : ""
             }
           >
             LogIn
-          </NavLink></li>
-       <li> <NavLink
-            to="/signUp"
-            className={({ isActive, isPending }) =>
-              isPending ? "pending" : isActive ? "text-red-500 " : ""
-            }
-          >
-            SingUp
-          </NavLink></li>
-        </ul>
-       </div>
-
-        <ProfileMenu />
+          </NavLink>
+       </>)}
+        
       </div>
       <MobileNav open={isNavOpen} className="overflow-scroll">
         <NavList />

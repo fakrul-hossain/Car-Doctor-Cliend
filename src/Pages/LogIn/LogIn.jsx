@@ -1,10 +1,15 @@
 import React, { useContext } from "react";
 import singUpImg from "../../assets/images/login/login.svg";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../Provider/AuthProvider";
+import axios from "axios";
+import { data } from "autoprefixer";
 
 const LogIn = () => {
   const { signIn } = useContext(AuthContext);
+  const location = useLocation();
+  const navigate = useNavigate();
+  console.log(location);
 
   const handleLogIn = (e) => {
     e.preventDefault();
@@ -15,10 +20,19 @@ const LogIn = () => {
     form.reset();
 
     signIn(email, password)
-    .then((result) => {
-      const user = result.user;
-    })
-    .catch(error => console.log(error))
+      .then((result) => {
+        const loggedInUser = result.user;
+        // navigate(location?.state ? location?.state : "/");
+        const user = {email};
+        axios.post('http://localhost:5000/jwt',user,{withCredentials: true})
+        .then(res=>{
+          console.log(res.data);
+          if (res.data.success) {
+            navigate(location?.state ? location?.state : "/");
+          }
+        })
+      })
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -66,7 +80,7 @@ const LogIn = () => {
               </div>
               <button
                 className="block w-full select-none rounded-lg text-white bg-[#000] py-3 px-6 text-center align-middle font-sans text-xs font-bold uppercase hover:text-white hover:bg-[#FF3811] transition-all hover:scale-90 focus:scale-100 focus:opacity-[0.85] active:scale-100 active:opacity-[0.85] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
-                type="button"
+                type="submit"
                 data-ripple-light="true"
               >
                 LogIN

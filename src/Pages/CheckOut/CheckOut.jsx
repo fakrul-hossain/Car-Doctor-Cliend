@@ -1,26 +1,55 @@
 import React, { useContext } from 'react';
 import {useLoaderData } from 'react-router-dom';
+import Swal from 'sweetalert2'
 import { AuthContext } from '../../Provider/AuthProvider';
 
 const CheckOut = () => {
     const checkout = useLoaderData() || {};
-    const {title,_id,price} = checkout
+    const {title,_id,price,img,} = checkout
     const {user} = useContext(AuthContext)
-    const handleCheckOut= (e) =>{
+    const handleCheckOut= e =>{
         e.preventDefault();
         const form = e.target;
-        const name = form.name.name;
-        const date = form.name.date;
-        const email = form.name.email;
-        const price = form.name.price;
+        const name = form.name.value;
+        const date = form.date.value;
+        const email = user?.email;
+        // console.log(email,name,date);
+        // const price = form.name.price;
+        form.reset();
+        const booking = {
+            customerName: name,
+            email,
+            img,
+            date,
+            service_id: _id,
+            price: price,
+            service: title
+        }
+                fetch('http://localhost:5000/bookings',{
+            method: 'POST',
+            headers:{
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(booking)
+        })
+        .then(res=> res.json())
+        .then(data=> {
+            if (data.insertedId) {
+                Swal.fire({
+                    title: `${title}`,
+                    text: 'Your order has been confirmed',
+                  })
+            }
+        })
     }
+
 
 
 
 
     return (
         <div className='max-w-[1440px] mx-auto '>
-            <h1>Book Services {title}</h1>
+            <h1 className='text-center py-6 font-bold text-[#FF3811] text-3xl'>Booking Services: {title}</h1>
             <form
 onSubmit={handleCheckOut}             
               className="mt-8 mb-2 w px-3 lg:px-32 mx-auto w-full"
